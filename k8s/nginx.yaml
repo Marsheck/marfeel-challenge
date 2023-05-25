@@ -1,0 +1,60 @@
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: statics-app
+  namespace: statics
+spec:
+  selector:
+    matchLabels:
+      app: statics-app
+  replicas: 1
+  template:
+    metadata:
+      labels:
+        app: statics-app
+    spec:
+      containers:
+      - name: nginx
+        image: nginx:1.14.2
+        ports:
+        - containerPort: 80
+        volumeMounts:
+        - name: html-volume
+          mountPath: /usr/share/nginx/html
+      volumes:
+      - name: html-volume
+        configMap:
+          name: html-config
+apiVersion: v1
+kind: Service
+metadata:
+  name: statics-app-service
+  namespace: statics
+spec:
+  selector:
+    app: statics-app
+  ports:
+    - protocol: TCP
+      port: 80
+      targetPort: 80
+  type: ClusterIP
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: statics-app-ingress
+  namespace: statics
+  annotations:
+    kubernetes.io/ingress.class: "nginx"
+    nginx.ingress.kubernetes.io/rewrite-target: /$1
+spec:
+  rules:
+  - http:
+      paths:
+      - pathType: Prefix
+        path: "/statics.html(/|$)(.*)"
+        backend:
+          service:
+            name: statics-app-service
+            port:
+              number: 80

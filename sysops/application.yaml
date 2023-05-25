@@ -1,0 +1,48 @@
+apiVersion: argoproj.io/v1alpha1
+kind: Application
+metadata:
+  name: app-dev
+  namespace: argocd
+spec:
+  project: default
+  source:
+    repoURL: 'https://github.com/Marsheck/marfeel-challenge'
+    path: k8s
+    targetRevision: dev # branch name
+  destination:
+    name: 'in-cluster'
+    namespace: 'my-app-dev'
+  syncPolicy:
+    automated: {}
+apiVersion: argoproj.io/v1alpha1
+kind: Application
+metadata:
+  name: app-stage
+  namespace: argocd
+spec:
+  project: default
+  source:
+    repoURL: 'https://github.com/Marsheck/marfeel-challenge'
+    path: k8s
+    targetRevision: stage # branch name
+  destination:
+    name: 'in-cluster'
+    namespace: 'my-app-stage'
+  syncPolicy:
+    automated: {}
+apiVersion: argoproj.io/v1alpha1
+kind: Application
+metadata:
+  name: app-prod
+  namespace: argocd
+spec:
+  project: default
+  source:
+    repoURL: 'https://github.com/Marsheck/marfeel-challenge'
+    path: k8s
+    targetRevision: prod # branch name
+  destination:
+    name: 'in-cluster'
+    namespace: 'my-app-prod'
+  syncPolicy:
+    automated: {}
